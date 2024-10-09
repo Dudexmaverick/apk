@@ -1,0 +1,55 @@
+public class MainActivity extends AppCompatActivity {
+    private VuforiaAppSession vuforiaAppSession;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        vuforiaAppSession = new VuforiaAppSession();
+        vuforiaAppSession.initAR(this, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        
+        // Iniciar Vuforia e a câmera
+        Vuforia.init();
+        CameraDevice.getInstance().init();
+    }
+    
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Continuar o Vuforia
+        Vuforia.resume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Pausar o Vuforia
+        Vuforia.pause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Libere os recursos do Vuforia
+        Vuforia.deinit();
+    }
+}
+private void setupTracker() {
+    Vuforia.registerCallback(new Vuforia.UpdateCallback() {
+        @Override
+        public void onVuforiaUpdate(Vuforia.State state) {
+            for (Trackable trackable : state.getTrackables()) {
+                if (trackable.getStatus() == Trackable.STATUS.TRACKED) {
+                    // Exibir o modelo ou informação associada
+                    displayModelInfo(trackable.getName());
+                }
+            }
+        }
+    });
+}
+
+private void displayModelInfo(String modelName) {
+    // Lógica para exibir informações sobre o modelo
+    Toast.makeText(this, "Modelo detectado: " + modelName, Toast.LENGTH_SHORT).show();
+}
